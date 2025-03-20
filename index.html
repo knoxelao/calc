@@ -126,35 +126,62 @@
             calculateExchange();
         }
         
-        function calculateExchange() {
-            let exchangeRate = parseFloat(document.getElementById("exchangeRate").value);
-            let amountNoFee = parseFloat(document.getElementById("amountNoFee").value) || 0;
-            let amountWithFee = parseFloat(document.getElementById("amountWithFee").value) || 0;
-            let feeRate = parseFloat(document.getElementById("feeRate").value) / 100 || 0.009;
-            let minFee = parseFloat(document.getElementById("minFee").value) || 500;
-            let maxFee = parseFloat(document.getElementById("maxFee").value) || 5000;
-            
-            if (isNaN(exchangeRate) || exchangeRate <= 0 || (amountNoFee === 0 && amountWithFee === 0)) {
-                document.getElementById("resultAmount").innerText = "";
-                document.getElementById("resultRate").innerText = "";
-                return;
-            }
-            
-            let fee = amountWithFee * feeRate;
-            fee = Math.max(minFee, Math.min(fee, maxFee)); // Ensuring fee is between min and max
-            let finalAmountWithFee = amountWithFee > 0 ? amountWithFee - fee : 0;
-            
-            let exchangedEURNoFee = amountNoFee > 0 ? amountNoFee / exchangeRate : 0; // No fee applied
-            let exchangedEURWithFee = finalAmountWithFee > 0 ? finalAmountWithFee / exchangeRate : 0; // Fee applied
-            
-            let totalEUR = exchangedEURNoFee + exchangedEURWithFee;
-            let totalRUB = amountNoFee + amountWithFee;
-            let effectiveRate = totalEUR > 0 ? totalRUB / totalEUR : 0; // Corrected calculation
-            
-            document.getElementById("resultAmount").innerText = `${totalEUR.toFixed(2)}`;
-            document.getElementById("resultRate").innerText = `${effectiveRate.toFixed(2)}`;
+function calculateExchange() {
+    let baseRate = parseFloat(document.getElementById("exchangeRate").value) || 0;
+    let amountNoFee = parseFloat(document.getElementById("amountNoFee").value) || 0;
+    let amountWithFee = parseFloat(document.getElementById("amountWithFee").value) || 0;
+    let feeRate = parseFloat(document.getElementById("feeRate").value) / 100 || 0;
+    let minFee = document.getElementById("minFee").value ? parseFloat(document.getElementById("minFee").value) : null;
+    let maxFee = document.getElementById("maxFee").value ? parseFloat(document.getElementById("maxFee").value) : null;
+
+    // Case 1: No base rate, fee is applied as-is
+    if (baseRate === 0) {
+        console.warn("Base rate is 0 or not provided, skipping multiplication by rate.");
+    }
+
+    let fee;
+    
+    // Apply min/max fee logic
+    if (minFee !== null && maxFee !== null) {
+        let calculatedFee = amountWithFee * feeRate;
+        if (calculatedFee < minFee) {
+            fee = minFee;
+        } else if (calculatedFee > maxFee) {
+            fee = maxFee;
+        } else {
+            fee = calculatedFee;
         }
+    } else if (minFee !== null) { // No max fee given
+        let calculatedFee = amountWithFee * feeRate;
+        fee = calculatedFee < minFee ? minFee : calculatedFee;
+    } else if (maxFee !== null) { // No min fee given
+        let calculatedFee = amountWithFee * feeRate;
+        fee = calculatedFee > maxFee ? maxFee : calculatedFee;
+    } else { // No min or max fee, just apply base rate
+        fee = amountWithFee * feeRate;
+    }
+
+    console.log("Applied Fee:", fee);
+
+    // Subtract fee from amount with fee
+    let finalAmountWithFee = amountWithFee - fee;
+
+    // Convert to EUR if base rate is given
+    let exchangedEURNoFee = amountNoFee > 0 && baseRate > 0 ? amountNoFee / baseRate : 0;
+    let exchangedEURWithFee = finalAmountWithFee > 0 && baseRate > 0 ? finalAmountWithFee / baseRate : 0;
+
+    let totalEUR = exchangedEURNoFee + exchangedEURWithFee;
+    let totalRUB = amountNoFee + amountWithFee;
+
+    let effectiveRate = totalEUR > 0 ? totalRUB / totalEUR : 0;
+
+    console.log("Total EUR:", totalEUR);
+    console.log("Total RUB:", totalRUB);
+    console.log("Effective Exchange Rate:", effectiveRate);
+
+    document.getElementById("resultAmount").innerText = `${totalEUR.toFixed(2)}`;
+    document.getElementById("resultRate").innerText = `${effectiveRate.toFixed(2)}`;
+}
     </script>
 </body>
 </html>
-
