@@ -42,14 +42,6 @@
             -webkit-appearance: none;
             margin: 0;
         }
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .advanced-settings {
-            display: none;
-        }
         .divider {
             border-top: 2px solid #ccc;
             margin: 15px 0;
@@ -66,45 +58,35 @@
     <table>
         <tr>
             <td>Курс</td>
-            <td><input type="number" id="exchangeRate" step="0.0001" placeholder="Введите курс" oninput="calculateExchange()"></td>
+            <td><input type="number" id="exchangeRate" step="0.0001" placeholder="" oninput="calculateExchange()"></td>
         </tr>
         <tr>
             <td>Без комиссии</td>
-            <td><input type="number" id="amountNoFee" step="0.01" placeholder="Введите сумму" oninput="calculateExchange()"></td>
+            <td><input type="number" id="amountNoFee" step="0.01" placeholder="" oninput="calculateExchange()"></td>
         </tr>
         <tr>
             <td>С комиссией</td>
-            <td><input type="number" id="amountWithFee" step="0.01" placeholder="Введите сумму" oninput="calculateExchange()"></td>
+            <td><input type="number" id="amountWithFee" step="0.01" placeholder="" oninput="calculateExchange()"></td>
         </tr>
     </table>
     
     <div class="divider"></div>
     
     <table>
-        <tr>
-            <td colspan="2" class="toggle-container">
-                <input type="checkbox" id="toggleAdvanced" onchange="toggleAdvancedSettings()">
-                <label for="toggleAdvanced">Дополнительно</label>
-            </td>
-        </tr>
-    </table>
-    
-    <div id="advancedSettings" class="advanced-settings">
-        <table>
-            <tr>
-                <td>Комиссия</td>
-                <td><input type="number" id="feeRate" step="0.01" placeholder="0.9" value="0.9" oninput="calculateExchange()"></td>
+       <tr>
+           <td>Комиссия</td>
+           <td><input type="number" id="feeRate" step="0.01" placeholder="%" value="0.9" oninput="calculateExchange()"></td>
+       </tr>
+       <tr>
+            <td>Минимум</td>
+            <td><input type="number" id="minFee" step="1" placeholder="0" value="500" oninput="calculateExchange()"></td>
             </tr>
             <tr>
-                <td>Минимум</td>
-                <td><input type="number" id="minFee" step="1" placeholder="500" value="500" oninput="calculateExchange()"></td>
-            </tr>
-            <tr>
-                <td>Максимум</td>
-                <td><input type="number" id="maxFee" step="1" placeholder="5000" value="5000" oninput="calculateExchange()"></td>
-            </tr>
-        </table>
-    </div>
+               <td>Максимум</td>
+               <td><input type="number" id="maxFee" step="1" placeholder="" value="5000" oninput="calculateExchange()"></td>
+           </tr>
+     </table>
+
     
     <div class="divider"></div>
     
@@ -120,11 +102,7 @@
     </table>
     
     <script>
-        function toggleAdvancedSettings() {
-            let advancedSettings = document.getElementById("advancedSettings");
-            advancedSettings.style.display = document.getElementById("toggleAdvanced").checked ? "block" : "none";
-            calculateExchange();
-        }
+
         
 function calculateExchange() {
     let baseRate = parseFloat(document.getElementById("exchangeRate").value) || 0;
